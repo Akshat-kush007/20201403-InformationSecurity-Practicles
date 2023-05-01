@@ -1,39 +1,29 @@
-// 4. Implement monoalphabetic and polyalphabetic cipher substitution operation.
+#include <iostream>
+#include <string>
+using namespace std;
 
-#include<stdio.h>
-#include<conio.h>
-#include<string.h>
-int main()
-{
-      char msg[30],key[30],k[20],ct[20],pt[20];
-      int lenm,lenk,i,j;
-    
- 
-      printf("Enter Message : ");
-      gets(msg);
-      printf("Enter Key : ");
-      gets(key);
-      lenm=strlen(msg);
-      lenk=strlen(key);
-      for(i=0;i<lenm;i++,j++)
-      {
-            if(j==lenk)
-            {
-                  j=0;
-            }
-            k[i]=key[j];
-      } 
-      for(i=0;i<lenm;i++)
-      { 
-            ct[i]=((msg[i]+k[i])%26)+'A';
-      }
-      ct[i]='\0'; 
-      for(i=0;i<lenm;i++)
-      {
-            pt[i]=(((ct[i]-k[i])+26)%26)+'A';
-      }
-      pt[i]='\0'; 
-      printf("\nEncrypted Message : %s", ct);
-      printf("\nDecrypted Message : %s", pt);
-      getch();
+int main() {
+  string message, key;
+  cout << "Enter Message : ";
+  getline(cin, message);
+  cout << "Enter Key : ";
+  getline(cin, key);
+
+  string encrypted_message = "";
+  for(int i = 0, j = 0; i < message.length(); i++, j++) {
+    if(j == key.length())
+      j = 0;
+    encrypted_message += ((message[i] + key[j]) % 26) + 'A';
   }
+
+  string decrypted_message = "";
+  for(int i = 0, j = 0; i < message.length(); i++, j++) {
+    if(j == key.length())
+      j = 0;
+    decrypted_message += ((encrypted_message[i] - key[j] + 26) % 26) + 'A';
+  }
+
+  cout << "\nEncrypted Message : " << encrypted_message;
+  cout << "\nDecrypted Message : " << decrypted_message;
+  return 0;
+}

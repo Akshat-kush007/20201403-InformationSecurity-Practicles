@@ -1,165 +1,135 @@
 // 8. Implement row transposition cipher transposition operation.
 
-#include<stdio.h>
-#include<string.h>
- 
-void cipher(int i, int c);
-int findMin();
-void makeArray(int, int);
- 
-char arr[22][22], darr[22][22], emessage[111], retmessage[111], key[55];
-char temp[55], temp2[55];
-int k = 0;
- 
-int main()
-{
-    char *message;
- 
-    int i, j, klen, emlen, flag = 0;
-    int r, c, index, rows;
- 
-    printf("Enter the key\n");
-    fflush(stdin);
-    gets(key);
- 
-    printf("\nEnter message to be ciphered\n");
-    fflush(stdin);
-    gets(message);
- 
-    strcpy(temp, key);
-    klen = strlen(key);
- 
-    k = 0;
-    for (i = 0;; i++)
+
+#include<bits/stdc++.h>
+using namespace std;
+  
+// Key for Columnar Transposition
+string const key = "HACK"; 
+map<int,int> keyMap;
+  
+void setPermutationOrder()
+{             
+    // Add the permutation order into map 
+    for(int i=0; i < key.length(); i++)
     {
-        if (flag == 1)
-            break;
- 
-        for (j = 0; key[j] != NULL; j++)
+        keyMap[key[i]] = i;
+    }
+}
+  
+// Encryption 
+string encryptMessage(string msg)
+{
+    int row,col,j;
+    string cipher = "";
+      
+    /* calculate column of the matrix*/
+    col = key.length(); 
+      
+    /* calculate Maximum row of the matrix*/
+    row = msg.length()/col; 
+      
+    if (msg.length() % col)
+        row += 1;
+  
+    char matrix[row][col];
+  
+    for (int i=0,k=0; i < row; i++)
+    {
+        for (int j=0; j<col; )
         {
-            if (message[k] == NULL)
+            if(msg[k] == '\0')
             {
-                flag = 1;
-                arr[i][j] = '-';
+                /* Adding the padding character '_' */
+                matrix[i][j] = '_';     
+                j++;
             }
-            else
-            {
-                arr[i][j] = message[k++];
+              
+            if( isalpha(msg[k]) || msg[k]==' ')
+            { 
+                /* Adding only space and alphabet into matrix*/
+                matrix[i][j] = msg[k];
+                j++;
             }
+            k++;
         }
     }
-    r = i;
-    c = j;
- 
-    for (i = 0; i < r; i++)
+  
+    for (map<int,int>::iterator ii = keyMap.begin(); ii!=keyMap.end(); ++ii)
     {
-        for (j = 0; j < c; j++)
+        j=ii->second;
+          
+        // getting cipher text from matrix column wise using permuted key
+        for (int i=0; i<row; i++)
         {
-            printf("%c ", arr[i][j]);
-        }
-        printf("\n");
-    }
- 
-    k = 0;
- 
-    for (i = 0; i < klen; i++)
-    {
-        index = findMin();
-        cipher(index, r);
-    }
- 
-    emessage[k] = '\0';
-    printf("\nEncrypted message is\n");
-    for (i = 0; emessage[i] != NULL; i++)
-        printf("%c", emessage[i]);
- 
-    printf("\n\n");
-    //deciphering
- 
-    emlen = strlen(emessage);
-    //emlen is length of encrypted message
- 
-    strcpy(temp, key);
- 
-    rows = emlen / klen;
-    //rows is no of row of the array to made from ciphered message
- 
-    j = 0;
- 
-    for (i = 0, k = 1; emessage[i] != NULL; i++, k++)
-    {
-        //printf("\nEmlen=%d",emlen);
-        temp2[j++] = emessage[i];
-        if ((k % rows) == 0)
-        {
-            temp2[j] = '\0';
-            index = findMin();
-            makeArray(index, rows);
-            j = 0;
+            if( isalpha(matrix[i][j]) || matrix[i][j]==' ' || matrix[i][j]=='_')
+                cipher += matrix[i][j];
         }
     }
- 
-    printf("\nArray Retrieved is\n");
- 
-    k = 0;
-    for (i = 0; i < r; i++)
-    {
-        for (j = 0; j < c; j++)
-        {
-            printf("%c ", darr[i][j]);
-            //retrieving message
-            retmessage[k++] = darr[i][j];
- 
-        }
-        printf("\n");
-    }
-    retmessage[k] = '\0';
- 
-    printf("\nMessage retrieved is\n");
- 
-    for (i = 0; retmessage[i] != NULL; i++)
-        printf("%c", retmessage[i]);
- 
-    return (0);
+  
+    return cipher;
 }
- 
-void cipher(int i, int r)
+  
+// Decryption 
+string decryptMessage(string cipher)
 {
-    int j;
-    for (j = 0; j < r; j++)
+    /* calculate row and column for cipher Matrix */
+    int col = key.length();
+  
+    int row = cipher.length()/col;
+    char cipherMat[row][col];
+  
+    /* add character into matrix column wise */
+    for (int j=0,k=0; j<col; j++)
+        for (int i=0; i<row; i++)
+            cipherMat[i][j] = cipher[k++];
+  
+    /* update the order of key for decryption */
+    int index = 0;
+    for( map<int,int>::iterator ii=keyMap.begin(); ii!=keyMap.end(); ++ii)
+        ii->second = index++;
+  
+    /* Arrange the matrix column wise according 
+    to permutation order by adding into new matrix */
+    char decCipher[row][col];
+    map<int,int>::iterator ii=keyMap.begin();
+    int k = 0;
+    for (int l=0,j; key[l]!='\0'; k++)
     {
+        j = keyMap[key[l++]];
+        for (int i=0; i<row; i++)
         {
-            emessage[k++] = arr[j][i];
+            decCipher[i][k]=cipherMat[i][j];
         }
     }
-    // emessage[k]='\0';
-}
- 
-void makeArray(int col, int row)
-{
-    int i, j;
- 
-    for (i = 0; i < row; i++)
+  
+    /* getting Message using matrix */
+    string msg = "";
+    for (int i=0; i<row; i++)
     {
-        darr[i][col] = temp2[i];
-    }
-}
- 
-int findMin()
-{
-    int i, j, min, index;
- 
-    min = temp[0];
-    index = 0;
-    for (j = 0; temp[j] != NULL; j++)
-    {
-        if (temp[j] < min)
+        for(int j=0; j<col; j++)
         {
-            min = temp[j];
-            index = j;
+            if(decCipher[i][j] != '_')
+                msg += decCipher[i][j];
         }
     }
- 
-    temp[index] = 123;
-    return (index);
+    return msg;
+}
+  
+// Driver Program
+int main(void)
+{
+    /* message */
+    string msg = "I am A Ramanujan Student"; 
+  
+    setPermutationOrder();
+      
+    // Calling encryption function
+    string cipher = encryptMessage(msg);
+    cout << "Encrypted Message: " << cipher << endl;
+      
+    // Calling Decryption function
+    cout << "Decrypted Message: " << decryptMessage(cipher) << endl;
+  
+    return 0;
 }

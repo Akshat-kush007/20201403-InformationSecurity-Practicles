@@ -1,83 +1,18 @@
-// 11. Implement a stream cipher technique.
-
 #include<iostream>
-#include <stdio.h>
+#include<string.h>
 using namespace std;
-char staticKey;
-
-void CycleKey(char data)
-{
-  
-
-    staticKey += data;
-
-    if (staticKey & 0x80)
-    {
-        staticKey ^= 0xD8;
-    }
-    else
-    {
-        staticKey += 0x8B;
-    }
+void XORChiper(char orignalString[]) {
+   char xorKey = 'T';
+   int len = strlen(orignalString);
+   for (int i = 0; i < len; i++){
+      orignalString[i] = orignalString[i] ^ xorKey;
+      cout<<orignalString[i];
+   }
 }
-
-void ResetCipher(const char * key)
-{
-    staticKey = 0;
-
-    while (*key)
-    {
-        CycleKey(*key);
-        key++;
-    }
+int main(){
+   char sampleString[] = "Hello!";
+   cout<<"The string is: "<<sampleString<<endl;
+   cout<<"Encrypted String: ";
+   XORChiper(sampleString);
+   return 0;
 }
-
-void Encrypt(const char * plaintext, char * encrypted)
-{
-    while (*plaintext)
-    {
-        *encrypted = *plaintext + staticKey;
-
-        CycleKey(*encrypted);
-
-        encrypted++;
-        plaintext++;
-    }
-
-    *encrypted = '\0';
-}
-
-void Decrypt(char * plaintext, const char * encrypted)
-{
-    while (*encrypted)
-    {
-        *plaintext = *encrypted - staticKey;
-
-        CycleKey(*encrypted);
-
-        plaintext++;
-        encrypted++;
-    }
-
-    *plaintext = '\0';
-}
-
-int main(void)
-{
-    char * key = "123";
-    char * message = "Hello, World!";
-    char encrypted[20];
-    char decrypted[20];
-
-    ResetCipher(key);
-    Encrypt(message, encrypted);
-
-    ResetCipher(key);
-    Decrypt(decrypted, encrypted);
-    cout<<"output: "<<decrypted<<" \n";
-   
-
-    return 0;
-}
-
-

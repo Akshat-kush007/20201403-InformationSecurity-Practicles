@@ -1,12 +1,15 @@
 // 4. Implement monoalphabetic and polyalphabetic cipher substitution operation.
 
+#include<iostream>
 #include<stdio.h>
 
-#include<conio.h>
+// #include<conio.h>
+
 #include<stdlib.h>
 #include<string.h>
+using namespace std;
 
-main()
+int main()
 {
 
 char plain[200],encr[200],encr1[200],decr[200];
@@ -16,8 +19,9 @@ char per[26];
 int i,j,size,k=0,a=0;
 char pos;
 
-printf("\nEnter the plain text");
-gets(plain);
+printf("\nEnter the plain text : ");
+cin.getline(plain, 100);
+
 size=strlen(plain);
 printf("\n size= %d",size);
  for(i=0;i<26;i++)
@@ -76,6 +80,6 @@ printf("%c",encr1[i]);
  }
  decr[i]='\0';
  printf("\nDecrypted string: %s\n",decr);
- getch();
+//  getch();
 }
 
